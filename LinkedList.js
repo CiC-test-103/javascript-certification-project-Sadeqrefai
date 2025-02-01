@@ -1,154 +1,163 @@
-// Necessary Imports (you will need to use this)
-const { Student } = require('./Student')
+// Import the Student class from Student.js
+const { Student } = require('./Student');
 
-/**
- * Node Class (GIVEN, you will need to use this)
- */
+// Node class to represent each element in the linked list
 class Node {
-  // Public Fields
-  data               // Student
-  next               // Object
-  /**
-   * REQUIRES:  The fields specified above
-   * EFFECTS:   Creates a new Node instance
-   * RETURNS:   None
-   */
-  constructor(data, next = null) {
-    this.data = data;
-    this.next = next
+  constructor(data) {
+    this.data = data; // This will hold the student object
+    this.next = null; // This points to the next node in the list
   }
 }
 
-/**
- * Create LinkedList Class (for student management)
- * The class should have the public fields:
- * - head, tail, length
- */
+// LinkedList class to manage the list of students
 class LinkedList {
-  // Public Fields
-  head              // Object
-  tail              // Object
-  length            // Number representing size of LinkedList
-
-  /**
-   * REQUIRES:  None
-   * EFFECTS:   Creates a new LinkedList instance (empty)
-   * RETURNS:   None
-   */
   constructor() {
-    // TODO
+    this.head = null; // The first node in the list
+    this.tail = null; // The last node in the list
+    this.length = 0;  // The number of nodes in the list
   }
 
-  /**
-   * REQUIRES:  A new student (Student)
-   * EFFECTS:   Adds a Student to the end of the LinkedList
-   * RETURNS:   None
-   * CONSIDERATIONS:
-   * - Think about the null case
-   * - Think about adding to the 'end' of the LinkedList (Hint: tail)
-   */
+  // Method to add a new student to the list
   addStudent(newStudent) {
-    // TODO
+    const newNode = new Node(newStudent); // Create a new node with the student
+
+    if (!this.head) {
+      // If the list is empty, set head and tail to the new node
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      // Otherwise, add the new node to the end of the list
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+    this.length++; // Increase the length of the list
   }
 
-  /**
-   * REQUIRES:  email(String)
-   * EFFECTS:   Removes a student by email (assume unique)
-   * RETURNS:   None
-   * CONSIDERATIONS:
-   * - Think about the null case
-   * - Think about how removal might update head or tail
-   */
+  // Method to remove a student by their email
   removeStudent(email) {
-    // TODO
+    if (!this.head) return; // If the list is empty, do nothing
+
+    if (this.head.data.getEmail() === email) {
+      // If the student to remove is the first node
+      this.head = this.head.next; // Move the head to the next node
+      this.length--;
+      return;
+    }
+
+    let current = this.head; // Start from the first node
+    while (current.next && current.next.data.getEmail() !== email) {
+      // Traverse the list to find the node before the one to remove
+      current = current.next;
+    }
+
+    if (current.next) {
+      // If the node to remove is found
+      if (current.next === this.tail) {
+        // If it's the last node, update the tail
+        this.tail = current;
+      }
+      current.next = current.next.next; // Remove the node
+      this.length--; // Decrease the length of the list
+    }
   }
 
-  /**
-   * REQUIRES:  email (String)
-   * EFFECTS:   None
-   * RETURNS:   The Student or -1 if not found
-   */
+  // Method to find a student by their email
   findStudent(email) {
-    // TODO
-    return -1
+    let current = this.head; // Start from the first node
+    while (current) {
+      if (current.data.getEmail() === email) {
+        // If the email matches, return the student object
+        return current.data;
+      }
+      current = current.next; // Move to the next node
+    }
+    return -1; // If not found, return -1
   }
 
-  /**
-   * REQUIRES:  None
-   * EFFECTS:   Clears all students from the Linked List
-   * RETURNS:   None
-   */
-  #clearStudents() {
-    // TODO
-  }
-
-  /**
-   * REQUIRES:  None
-   * EFFECTS:   None
-   * RETURNS:   LinkedList as a String for console.log in caller
-   * CONSIDERATIONS:
-   *  - Let's assume you have a LinkedList with two people
-   *  - Output should appear as: "JohnDoe, JaneDoe"
-   */
+  // Method to display all students in the list
   displayStudents() {
-    // TODO
-    return "";
+    let result = []; // Array to hold student names
+    let current = this.head; // Start from the first node
+    while (current) {
+      result.push(current.data.getName()); // Add student name to the result
+      current = current.next; // Move to the next node
+    }
+    return result.join(', '); // Return names as a comma-separated string
   }
 
-  /**
-   * REQUIRES:  None
-   * EFFECTS:   None
-   * RETURNS:   A sorted array of students by name
-   */
-  #sortStudentsByName() {
-    // TODO
-    return [];
+  // Method to clear all students from the list
+  clearStudents() {
+    this.head = null; // Reset the head
+    this.tail = null; // Reset the tail
+    this.length = 0;  // Reset the length
   }
 
-  /**
-   * REQUIRES:  specialization (String)
-   * EFFECTS:   None
-   * RETURNS:   An array of students matching the specialization, sorted alphabetically by student name
-   * CONSIDERATIONS:
-   * - Use sortStudentsByName()
-   */
+  // Method to filter students by specialization
   filterBySpecialization(specialization) {
-    // TODO
-    return [];
+    let result = []; // Array to hold matching students
+    let current = this.head; // Start from the first node
+    while (current) {
+      if (current.data.getSpecialization() === specialization) {
+        // If specialization matches, add the student to the result
+        result.push(current.data);
+      }
+      current = current.next; // Move to the next node
+    }
+    return result.sort((a, b) => a.getName().localeCompare(b.getName())); // Sort by name and return
   }
 
-  /**
-   * REQUIRES:  minAge (Number)
-   * EFFECTS:   None
-   * RETURNS:   An array of students who are at least minAge, sorted alphabetically by student name
-   * CONSIDERATIONS:
-   * - Use sortStudentsByName()
-   */
+  // Method to filter students by minimum age (year of study)
   filterByMinAge(minAge) {
-    // TODO
-    return [];
+    let result = []; // Array to hold matching students
+    let current = this.head; // Start from the first node
+    while (current) {
+      if (current.data.getYear() >= minAge) {
+        // If year of study is greater than or equal to minAge, add to result
+        result.push(current.data);
+      }
+      current = current.next; // Move to the next node
+    }
+    return result.sort((a, b) => a.getName().localeCompare(b.getName())); // Sort by name and return
   }
 
-  /**
-   * REQUIRES:  A valid file name (String)
-   * EFFECTS:   Writes the LinkedList to a JSON file with the specified file name
-   * RETURNS:   None
-   */
+  // Method to save the list to a JSON file
   async saveToJson(fileName) {
-    // TODO
+    const fs = require('fs/promises'); // Import file system module for promises
+    let current = this.head; // Start from the first node
+    const studentsArray = []; // Array to hold student objects
+
+    while (current) {
+      studentsArray.push({
+        name: current.data.getName(),
+        year: current.data.getYear(),
+        email: current.data.getEmail(),
+        specialization: current.data.getSpecialization()
+      });
+      current = current.next; // Move to the next node
+    }
+
+    await fs.writeFile(fileName, JSON.stringify(studentsArray, null, 2)); // Write to file
   }
 
-  /**
-   * REQUIRES:  A valid file name (String) that exists
-   * EFFECTS:   Loads data from the specified fileName, overwrites existing LinkedList
-   * RETURNS:   None
-   * CONSIDERATIONS:
-   *  - Use clearStudents() to perform overwriting
-   */
+  // Method to load the list from a JSON file
   async loadFromJSON(fileName) {
-    // TODO
-  }
+    const fs = require('fs/promises'); // Import file system module for promises
+    const data = await fs.readFile(fileName, 'utf8'); // Read the file
+    const studentsArray = JSON.parse(data); // Parse the JSON data
 
+    this.clearStudents(); // Clear the current list
+
+    studentsArray.forEach(studentData => {
+      // Create and add each student to the list
+      const student = new Student(
+        studentData.name,
+        studentData.year,
+        studentData.email,
+        studentData.specialization
+      );
+      this.addStudent(student);
+    });
+  }
 }
 
-module.exports = { LinkedList }
+module.exports = { LinkedList }; // Export the LinkedList class
